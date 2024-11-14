@@ -1,0 +1,10 @@
+program exemple;
+{Typer (et convertir) des variables}
+var
+  x:int;
+  y:float;
+begin
+  x = 3;
+  y = x;
+  1+2*y;
+end.

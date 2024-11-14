@@ -1,0 +1,9 @@
+program exemple;
+{La ça devrait provoquer une erreur de type : cast interdit}
+var
+  x:int;
+
+begin
+  x:=3.5;
+  1+2*x;
+end.

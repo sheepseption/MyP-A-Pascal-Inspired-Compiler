@@ -1,0 +1,6 @@
+program exemple;
+{Avez vous pensez à gerer les parenthèses}
+begin
+  (1 +2) *3;
+end.
+

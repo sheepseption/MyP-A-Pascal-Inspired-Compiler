@@ -26,7 +26,10 @@ void yyerror (char* s) {
 return stack[sp-1].int_value;\n\
 }\n";  
 
-
+int new_offset() {
+  static int x = 0;
+  return x++;
+}
 
  
 %}
@@ -105,9 +108,10 @@ prog_head : PRG ID PV
 ;
 
 prog_body : opt_funs
-           {printf("%s\n",start_main);}
-            opt_vars BIN inst_list BOUT DOT
-	   {printf("%s\n",end_main);}
+            {printf("%s\n",start_main);}
+            opt_vars
+	    BIN inst_list BOUT DOT
+	    {printf("%s\n",end_main);}
             
 ;
 
@@ -125,18 +129,7 @@ decl_list : decl_list decl   {}
 | decl                       {}
 ;
 
-decl: var_decl opt_value PV             {}
-;
-
-opt_value : AFF exp
-| ;
-
-
-var_decl : vlist CLN type     {}
-;
-
-vlist: vlist vir ID            {}
-| ID                           {}
+decl: ID CLN type PV             {}
 ;
 
 type
@@ -261,15 +254,19 @@ exp
 // V.1 Exp. arithmetiques
 : MOINS exp %prec UNA         {}
          // -x + y lue comme (- x) + y  et pas - (x + y)
-| exp PLUS exp                {}
-| exp MOINS exp               {}
-| exp STAR exp                {}
-| exp DIV exp                 {}
-| PO exp PF                   {}
-| ID                          {}
+| exp PLUS exp                {printf("ADDI;\n");
+                              $$ = $1 + $3;}
+| exp MOINS exp               {printf("ADDI;\n");
+                              $$ = $1 - $3;}
+| exp STAR exp                {printf("MULTI;\n");
+                              $$ = $1 * $3;}
+| exp DIV exp                 {printf("DIVI;\n");
+                              $$ = $1 / $3;}
+| PO exp PF                   {$$ = $2;}
+| ID                          {printf("LOADBP;\nLOADI(%d);\nLOADP;\n", new_offset());}
 | app                         {}
-| NUM                         {}
-| DEC                         {}
+| NUM                         {printf("LOADI(%d);\n", $1);}
+| DEC                         {/*printf("LOADF(%f);\n", $$);*/}
 
 
 // V.2. Booléens
