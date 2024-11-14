@@ -20,10 +20,15 @@ void yyerror (char* s) {
 "int main() {\n\
 /* Starting (main) program target PCode */\n";
     
-  char * end_main=  
+  char * end_main_int=  
 "\n\
 /* Stoping (main) program target PCode */\n\
 return stack[sp-1].int_value;\n\
+}\n";  
+  char * end_main_float=  
+"\n\
+/* Stoping (main) program target PCode */\n\
+return stack[sp-1].float_value;\n\
 }\n";  
 
 int new_offset() {
@@ -92,7 +97,7 @@ char * type2string (int c) {
 %start prog  
 
 // liste de tous les non terminaux dont vous voulez manipuler l'attribut
-%type <type_value> type exp  typename
+%type <type_value> type exp  typename ret inst inst_list prog_body 
 %type <string_value> fun_head
 
  /* Attention, la rêgle de calcul par défaut $$=$1 
@@ -111,7 +116,10 @@ prog_body : opt_funs
             {printf("%s\n",start_main);}
             opt_vars
 	    BIN inst_list BOUT DOT
-	    {printf("%s\n",end_main);}
+	    { if($5 == INT)
+        printf("%s\n",end_main_int);
+        else if($5 == FLOAT)
+        printf("%s\n",end_main_float);}
             
 ;
 
@@ -179,8 +187,8 @@ fun_body : opt_vars BIN inst_list BOUT PV    {}
 // IV. Instructions
 
 
-inst_list: inst_list inst PV   {} 
-| inst PV                      {}
+inst_list: inst_list inst PV   {$$ = $2;} 
+| inst PV                      {$$ = $1;}
 ;
 
      // chaque instruction se termine par ";" contrairement au langage C
@@ -188,7 +196,7 @@ inst_list: inst_list inst PV   {}
 inst:
 opt_vars block_begin inst_list block_end   {}
 | aff                         {}
-| ret                         {}
+| ret                         {$$ = $1;}
 | cond                        {}
 | loop                        {}
 ;
@@ -243,7 +251,7 @@ while : WHILE                 {}
 
 // IV.4. Valeur
 
-ret : exp
+ret : exp                     {$$ = $1;}
 ;
 
 
@@ -254,20 +262,101 @@ exp
 // V.1 Exp. arithmetiques
 : MOINS exp %prec UNA         {}
          // -x + y lue comme (- x) + y  et pas - (x + y)
-| exp PLUS exp                {printf("ADDI;\n");
-                              $$ = $1 + $3;}
-| exp MOINS exp               {printf("ADDI;\n");
-                              $$ = $1 - $3;}
-| exp STAR exp                {printf("MULTI;\n");
-                              $$ = $1 * $3;}
-| exp DIV exp                 {printf("DIVI;\n");
-                              $$ = $1 / $3;}
+| exp PLUS exp                {if($1 == INT && $3 == INT) {
+                                printf("ADDI;\n");
+                                $$ = INT;
+                              }
+                              else if($1 == FLOAT && $3 == FLOAT) {
+                                printf("ADDF;\n");
+                                $$ = FLOAT;
+                              }
+                              else if($1 == FLOAT && $3 == INT) {
+                                printf("I2F1;\n");
+                                printf("ADDF;\n");
+                                $$ = FLOAT;
+                              }
+                              else if($1 == INT && $3 == FLOAT) {
+                                printf("I2F2;\n");
+                                printf("ADDF;\n");
+                                $$ = FLOAT;
+                              }
+                              //$$ = $1 + $3;
+                              }
+
+| exp MOINS exp               {if($1 == INT && $3 == INT) {
+                                printf("SUBI;\n");
+                                $$ = INT;
+                              }
+                              else if($1 == FLOAT && $3 == FLOAT) {
+                                printf("SUBF;\n");
+                                $$ = FLOAT;
+                              }
+                              else if($1 == FLOAT && $3 == INT) {
+                                printf("I2F1;\n");
+                                printf("SUBF;\n");
+                                $$ = FLOAT;
+                              }
+                              else if($1 == INT && $3 == FLOAT) {
+                                printf("I2F2;\n");
+                                printf("SUBF;\n");
+                                $$ = FLOAT;
+                              };
+                              /*$$ = $1 - $3;*/
+                              }
+
+| exp STAR exp                {if($1 == INT && $3 == INT) {
+                                printf("MULTI;\n");
+                                $$ = INT;
+                              }
+                              else if($1 == FLOAT && $3 == FLOAT) {
+                                printf("MULTF;\n");
+                                $$ = FLOAT;
+                              }
+                              else if($1 == FLOAT && $3 == INT) {
+                                printf("I2F1;\n");
+                                printf("MULTF;\n");
+                                $$ = FLOAT;
+                              }
+                              else if($1 == INT && $3 == FLOAT) {
+                                printf("I2F2;\n");
+                                printf("MULTF;\n");
+                                $$ = FLOAT;
+                              }
+                              //$$ = $1 * $3;
+                              }
+| exp DIV exp                 {if($1 == INT && $3 == INT) {
+                                printf("DIVI;\n");
+                                $$ = INT;
+                              }
+                              else if($1 == FLOAT && $3 == FLOAT) {
+                                printf("DIVF;\n");
+                                $$ = FLOAT;
+                              }
+                              else if($1 == FLOAT && $3 == INT) {
+                                printf("I2F1;\n");
+                                printf("DIVF;\n");
+                                $$ = FLOAT;
+                              }
+                              else if($1 == INT && $3 == FLOAT) {
+                                printf("I2F2;\n");
+                                printf("DIVF;\n");
+                                $$ = FLOAT;
+                              }
+                              //$$ = $1 / $3;
+                              }
 | PO exp PF                   {$$ = $2;}
 | ID                          {printf("LOADBP;\nLOADI(%d);\nLOADP;\n", new_offset());}
 | app                         {}
-| NUM                         {printf("LOADI(%d);\n", $1);}
-| DEC                         {/*printf("LOADF(%f);\n", $$);*/}
-
+| NUM                         {attribute i = makeSymbol(INT, new_offset(), 1);
+                              $$ = i->type;
+                              printf("LOADI(%d);\n", $1);}
+| DEC                         {attribute f = makeSymbol(FLOAT, new_offset(), 1);
+                              $$ = f->type;
+                              printf("LOADF(%f);\n", (float)$1);}
+//why $1 instead of $$
+//est-ce que c'est le compilateur qui gère le cas de division par zero
+//detection erreurs (conversion implicite)
+//est-ce qu'on a le droit de modifier type_value
 
 // V.2. Booléens
 
