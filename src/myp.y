@@ -32,7 +32,7 @@ return stack[sp-1].float_value;\n\
 }\n";  
 
 int new_offset() {
-  static int x = 0;
+  static int x = 1;
   return x++;
 }
 
@@ -49,14 +49,14 @@ int new_offset() {
   int offset_value;
 }
 
-%token <int_value> NUM
+%token <int_value> NUM 
 %token <float_value> DEC
 
 %token PRG FUN VAR BIN BOUT AFF CLN DOT
 
 %token INT FLOAT VOID
 
-%token <string_value> ID
+%token <string_value> ID 
 %token PO PF PV VIR
 %token <label_value> IF ELSE WHILE
 
@@ -98,8 +98,8 @@ char * type2string (int c) {
 
 // liste de tous les non terminaux dont vous voulez manipuler l'attribut
 %type <type_value> type exp  typename ret inst inst_list prog_body 
-%type <string_value> fun_head
-
+%type <string_value> fun_head 
+%type <int_value> aff_symb  //added by me
  /* Attention, la rêgle de calcul par défaut $$=$1 
     peut créer des demandes/erreurs de type d'attribut */
 
@@ -137,11 +137,16 @@ decl_list : decl_list decl   {}
 | decl                       {}
 ;
 
-decl: ID CLN type PV             {}
+decl: ID CLN type PV             {attribute i = makeSymbol($3, new_offset(),depth);
+                                  set_symbol_value((sid)$1,i);
+                                  if ($3 == INT) {printf("LOADI(%d)\n", 0);}
+                                  else if ($3 == FLOAT) {printf("LOADF(%f)\n", 0.0);}
+                                  //$$ = (int) i->offset;
+                                  }
 ;
 
 type
-: typename                     {}
+: typename                     {$$=$1;}
 ;
 
 typename
@@ -214,9 +219,17 @@ block_end : BOUT
 
 // IV.1 Affectations
 
-aff : ID AFF exp               {}
+aff : ID aff_symb exp               {printf("STOREP\n");}
+                                
+                        
 ;
 
+aff_symb: AFF {
+              printf("LOADBP\nSHIFT(%d)\n", get_symbol_value($<string_value>0)->offset);
+              }
+                                    
+
+////////////////////// ?! id_name: ID {printf("LOADBP\nSHIFT(%d)\nLOADI(%d)\n", 1, $<int_value>3);};
 // IV.2. Conditionelles
 //           N.B. ces rêgles génèrent un conflit déclage reduction
 //           qui est résolu comme on le souhaite par un décalage (shift)
@@ -345,14 +358,23 @@ exp
                               //$$ = $1 / $3;
                               }
 | PO exp PF                   {$$ = $2;}
-| ID                          {printf("LOADBP;\nLOADI(%d);\nLOADP;\n", new_offset());}
+| ID                          {attribute x = get_symbol_value((sid)$1);
+                               printf("LOADBP;\nSHIFT(%d)\nLOADP;\n", x->offset); //LOADI(%d);\n
+                               $$ = x->type;
+                              }
 | app                         {}
-| NUM                         {attribute i = makeSymbol(INT, new_offset(), 1);
-                              $$ = i->type;
-                              printf("LOADI(%d);\n", $1);}
-| DEC                         {attribute f = makeSymbol(FLOAT, new_offset(), 1);
-                              $$ = f->type;
-                              printf("LOADF(%f);\n", (float)$1);}
+| NUM                         {//attribute i = makeSymbol(INT, new_offset(), 1);
+                              //$$ = i->type;
+                              $$ = INT;
+                              printf("LOADI(%d);\n", $1);
+                              }
+| DEC                         {//attribute f = makeSymbol(FLOAT, new_offset(), 1);
+                              //$$ = f->type;
+                              $$ = $1;
+                              if ($<int_value>0 != 666){
+                                $$ = FLOAT;
+                                printf("LOADF(%f);\n", (float)$1);}
+                              }
 //why $1 instead of $$
 //est-ce que c'est le compilateur qui gère le cas de division par zero
 //detection erreurs (conversion implicite)
