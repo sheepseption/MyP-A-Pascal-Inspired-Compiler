@@ -14,7 +14,7 @@ void yyerror (char* s) {
   }
 		
  int depth=0; // block depth
- 
+ int offset=0;
 
   char * start_main=  
 "int main() {\n\
@@ -137,7 +137,7 @@ decl_list : decl_list decl   {}
 | decl                       {}
 ;
 
-decl: ID CLN type PV             {attribute i = makeSymbol($3, new_offset(),depth);
+decl: ID CLN type PV             {attribute i = makeSymbol($3, offset++,depth);
                                   set_symbol_value((sid)$1,i);
                                   if ($3 == INT) {printf("LOADI(%d)\n", 0);}
                                   else if ($3 == FLOAT) {printf("LOADF(%f)\n", 0.0);}
@@ -219,7 +219,10 @@ block_end : BOUT
 
 // IV.1 Affectations
 
-aff : ID aff_symb exp               {printf("STOREP\n");}
+aff : ID aff_symb exp               {if(get_symbol_value($<string_value>1)->type == $3){printf("STOREP\n");}
+                                     else {printf("Erreur: Type error in affectation\n");
+                                     return 0;}
+                                    }
                                 
                         
 ;
@@ -229,14 +232,14 @@ aff_symb: AFF {
               }
                                     
 
-////////////////////// ?! id_name: ID {printf("LOADBP\nSHIFT(%d)\nLOADI(%d)\n", 1, $<int_value>3);};
+
 // IV.2. Conditionelles
 //           N.B. ces rêgles génèrent un conflit déclage reduction
 //           qui est résolu comme on le souhaite par un décalage (shift)
 //           avec ELSE en entrée (voir y.output)
 
 cond :
-if bool_cond inst  elsop       {}
+if bool_cond inst  elsop       {printf("END_%d\n", new_offset());}
 ;
 
 elsop : else inst              {}
@@ -384,7 +387,9 @@ exp
 
 | NOT exp %prec UNA           {}
 | exp INF exp                 {}
-| exp SUP exp                 {}
+| exp SUP exp                 {if($1 == INT){printf("GTI\n");}
+                               else if($3 == FLOAT){printf("GTF\n");}
+                              }
 | exp EQUAL exp               {}
 | exp DIFF exp                {}
 | exp AND exp                 {}
