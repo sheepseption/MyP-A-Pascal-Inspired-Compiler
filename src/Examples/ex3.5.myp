@@ -1,0 +1,7 @@
+program exemple;
+{On peut aussi detecter les variables non déclarée : avec un message d'erreur sur std error ?}
+var
+  x:float;
+begin
+  y := 3;
+end.

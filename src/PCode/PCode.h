@@ -25,7 +25,7 @@
  *
  *  WARNING : Codage du PCode en l'état, peut-être avec des erreurs (?) 
  *  et susceptible d'être étendu si besoin.
- *  Dans ce cas, il faudra détailler les extensions ou corrections proposées dans le rapport.
+ *  Dans ce cas, il faudra détailler les extensions ou corrections proposées.
  *
  */
 
@@ -57,15 +57,13 @@ extern int bp;
      // Block pointeur : un pointeur (ou index) qui marque une position fixe,
      // sur la pile, à partir de laquelle on peut retrouver les données
      // (paramètres, variables locales) propres au bloc courant.
-
-/*
+     // A utiliser lors des appels de fonctions.
 
 extern int fp;
-     // Frame pointer. Peut être utilisé à divers usage :-)
-     // Simplifie la gestion des appels / retours de fonctions
-     // Mais c'est non necessaire.
+     // Frame pointer : idem, mais à utiliser pour retrouver les valeurs
+     // des variables externes à un bloc donné.
+   
      
-*/
 
 /*************************************************/
 // Instructions P-CODE, définit comme des macros C
@@ -89,9 +87,9 @@ extern int fp;
 
 
 /* CONVERSION */
-#define I2F1 stack[sp-1].float_value = (float) stack[sp-1].int_value;
+#define I2F2 stack[sp-1].float_value = (float) stack[sp-1].int_value;
                    /* Conversion sommet de pile */
-#define I2F2 stack[sp-2].float_value = (float) stack[sp-2].int_value;
+#define I2F1 stack[sp-2].float_value = (float) stack[sp-2].int_value;
                    /* Conversion sous sommet de pile */
 
 
@@ -169,8 +167,10 @@ extern int fp;
 
 #define LOADBP stack[sp++].index_value = bp;
 
-#define SHIFT (N) stack[sp].index_value = stack[sp].index_value + N;
-/* L'offset N popurra aussi être négatif */
+#define LOADFP stack[sp++].index_value = fp;
+
+#define SHIFT(N) stack[sp-1].index_value = stack[sp-1].index_value + N;
+/* L'offset N pourra aussi être négatif */
 
 #define LOADP stack[sp-1] = stack[stack[sp-1].index_value];
     /* Remplace l'index de sommet de pile par la valeur stocké à cet index */

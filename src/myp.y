@@ -284,12 +284,12 @@ exp
                                 $$ = FLOAT;
                               }
                               else if($1 == FLOAT && $3 == INT) {
-                                printf("I2F1;\n");
+                                printf("I2F2;\n");
                                 printf("ADDF;\n");
                                 $$ = FLOAT;
                               }
                               else if($1 == INT && $3 == FLOAT) {
-                                printf("I2F2;\n");
+                                printf("I2F1;\n");
                                 printf("ADDF;\n");
                                 $$ = FLOAT;
                               }
@@ -305,12 +305,12 @@ exp
                                 $$ = FLOAT;
                               }
                               else if($1 == FLOAT && $3 == INT) {
-                                printf("I2F1;\n");
+                                printf("I2F2;\n");
                                 printf("SUBF;\n");
                                 $$ = FLOAT;
                               }
                               else if($1 == INT && $3 == FLOAT) {
-                                printf("I2F2;\n");
+                                printf("I2F1;\n");
                                 printf("SUBF;\n");
                                 $$ = FLOAT;
                               };
@@ -326,12 +326,12 @@ exp
                                 $$ = FLOAT;
                               }
                               else if($1 == FLOAT && $3 == INT) {
-                                printf("I2F1;\n");
+                                printf("I2F2;\n");
                                 printf("MULTF;\n");
                                 $$ = FLOAT;
                               }
                               else if($1 == INT && $3 == FLOAT) {
-                                printf("I2F2;\n");
+                                printf("I2F1;\n");
                                 printf("MULTF;\n");
                                 $$ = FLOAT;
                               }
@@ -346,12 +346,12 @@ exp
                                 $$ = FLOAT;
                               }
                               else if($1 == FLOAT && $3 == INT) {
-                                printf("I2F1;\n");
+                                printf("I2F2;\n");
                                 printf("DIVF;\n");
                                 $$ = FLOAT;
                               }
                               else if($1 == INT && $3 == FLOAT) {
-                                printf("I2F2;\n");
+                                printf("I2F1;\n");
                                 printf("DIVF;\n");
                                 $$ = FLOAT;
                               }

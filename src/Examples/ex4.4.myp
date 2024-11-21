@@ -1,0 +1,12 @@
+program exemple;
+{Conditionelle imbriquée}
+var
+  x:int;
+  y:int;
+  z:int;
+begin
+ if (x < 0)
+    if (y>0) z := 0 else z:=1
+ else
+    if (y<0) z := 2 else z:=4;
+end.

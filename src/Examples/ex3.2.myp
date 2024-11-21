@@ -3,6 +3,6 @@ program exemple;
 var
   x:float;
 begin
-  x = 3;
+  x := 3;
   1+x*2;
 end.

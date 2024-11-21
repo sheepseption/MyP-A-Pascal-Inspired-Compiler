@@ -4,7 +4,7 @@ var
   x:int;
   y:float;
 begin
-  x = 3;
-  y = x;
+  x := 3;
+  y := x;
   1+2*y;
 end.
