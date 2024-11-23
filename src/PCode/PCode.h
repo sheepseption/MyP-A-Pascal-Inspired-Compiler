@@ -155,13 +155,13 @@ extern int fp;
 /********** V. Opérations booléennes *********/
 /* codé par évaluation paresseuse ? */
 
-/*
+/*this section was commented*/
   // boolean coded as integer
 #define OR stack[sp - 2].int_value = stack[sp - 2].int_value || stack[sp - 1].int_value; sp--;
 #define AND stack[sp - 2].int_value = stack[sp - 2].int_value && stack[sp - 1].int_value; sp--;
 #define NOT stack[sp - 1].int_value = ! stack[sp - 1].int_value;
+/*this is the end of the previously commented section*/
 
-*/
 
 /********** VI. Arithmétique des pointeurs *********/
 

@@ -15,6 +15,8 @@ void yyerror (char* s) {
 		
  int depth=0; // block depth
  int offset=0;
+ int label=0;
+ int loop=0;
 
   char * start_main=  
 "int main() {\n\
@@ -99,7 +101,7 @@ char * type2string (int c) {
 // liste de tous les non terminaux dont vous voulez manipuler l'attribut
 %type <type_value> type exp  typename ret inst inst_list prog_body 
 %type <string_value> fun_head 
-%type <int_value> aff_symb  //added by me
+%type <int_value> aff_symb if while//added by me
  /* Attention, la rêgle de calcul par défaut $$=$1 
     peut créer des demandes/erreurs de type d'attribut */
 
@@ -239,30 +241,30 @@ aff_symb: AFF {
 //           avec ELSE en entrée (voir y.output)
 
 cond :
-if bool_cond inst  elsop       {printf("END_%d\n", new_offset());}
+if bool_cond inst  elsop       {printf("END_%d:\n", $<int_value>1);}
 ;
 
 elsop : else inst              {}
 |                  %prec IFX   {} // juste un "truc" pour éviter le message de conflit shift / reduce
 ;
 
-bool_cond : PO exp PF         {}
+bool_cond : PO exp PF         {printf("IFN(False_%d)\n", $<int_value>0);}
 ;
 
-if : IF                       {}
+if : IF                       {$$ = label++;}
 ;
 
-else : ELSE                   {}
+else : ELSE                   {printf("GOTO(End_%d)\nFalse_%d:\n", $<int_value>-2, $<int_value>-2);}
 ;
 
 // IV.3. Iterations
 
-loop : while while_cond inst  {}
+loop : while while_cond inst  {printf("GOTO(StartLoop_%d)\nEndLoop_%d:\n", $1,$1 );}
 ;
 
-while_cond : PO exp PF        {}
+while_cond : PO exp PF        {printf("IFN(EndLoop_%d)\n", $<int_value>0);}
 
-while : WHILE                 {}
+while : WHILE                 {$$=loop++; printf("StartLoop_%d:\n", $$);}
 ;
 
 // IV.4. Valeur
@@ -385,15 +387,21 @@ exp
 
 // V.2. Booléens
 
-| NOT exp %prec UNA           {}
-| exp INF exp                 {}
+| NOT exp %prec UNA           {printf("NOT\n");}
+| exp INF exp                 {if($1 == INT){printf("LTI\n");}
+                               else if($3 == FLOAT){printf("LTF\n");}
+                              }
 | exp SUP exp                 {if($1 == INT){printf("GTI\n");}
                                else if($3 == FLOAT){printf("GTF\n");}
                               }
-| exp EQUAL exp               {}
-| exp DIFF exp                {}
-| exp AND exp                 {}
-| exp OR exp                  {}
+| exp EQUAL exp               {if($1 == INT){printf("EQI\n");}
+                               else if($3 == FLOAT){printf("EQF\n");}
+                              }
+| exp DIFF exp                {if($1 == INT){printf("NEQI\n");}
+                               else if($3 == FLOAT){printf("NEQF\n");}
+                              }
+| exp AND exp                 {printf("AND\n");}
+| exp OR exp                  {printf("OR\n");}
 
 ;
 
