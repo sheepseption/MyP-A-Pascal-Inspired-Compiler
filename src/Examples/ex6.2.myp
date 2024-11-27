@@ -1,0 +1,10 @@
+program exemple;
+{Fonction moins simple}
+function
+  addOne (y:int) : int
+  begin
+   addOne := y+1;
+  end;
+begin
+  addOne (2);
+end.

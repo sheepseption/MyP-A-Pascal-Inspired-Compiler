@@ -1,0 +1,14 @@
+program exemple;
+{Sous-blocs simples}
+var
+  x:int;
+begin
+  x := 0;
+  var
+    y:int;
+  begin
+    y := 1;
+    x := y;
+  end;
+  x;
+end.

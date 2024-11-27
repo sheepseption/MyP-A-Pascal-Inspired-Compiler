@@ -1,72 +1,63 @@
 #include "PCode.h"
 
-/* (Optionnal) functions' target PCode */
-
-int main() {
-/* Starting (main) program target PCode */
+int main() { // Starts program target code
 
 // Declare variable x of type int with offset 0 at depth 0
 LOADI(0) // initial integer value for x
 // Declare variable y of type int with offset 1 at depth 0
 LOADI(0) // initial integer value for y
 
-// Write a value into variable x
-  // loading x adress (left value) in stack
-LOADBP
-SHIFT(0) // offset 0 
-  // loading expected x (right) value in stack
+// loading x adress (left value) in stack
+LOADBP // load current BP address
+SHIFT(0) // apply offset 0
+// loading expected x (right) value in stack
 LOADI(1)
-  // storing x (right) value at x adress
-STOREP
+STOREP // storing x (right) value at x adress (left value)
 
 
 // Debut conditionelle 0
 
-// Read variable x value
-  // loading x address (left value) at depth 0 and offset 0 in stack
-LOADBP
-SHIFT(0) // local var with offset 0 
-  // reading x (right) value at its adress (left value)
-LOADP
+// loading x adress (left value) in stack
+LOADBP // load current BP address
+SHIFT(0) // apply offset 0
+// loading expected x (right) value in stack
+LOADP // loading x (right) value on stack
 
-// Read variable y value
-  // loading y address (left value) at depth 0 and offset 1 in stack
-LOADBP
-SHIFT(1) // local var with offset 1 
-  // reading y (right) value at its adress (left value)
-LOADP
+
+// loading y adress (left value) in stack
+LOADBP // load current BP address
+SHIFT(1) // apply offset 1
+// loading expected y (right) value in stack
+LOADP // loading y (right) value on stack
+
 LOADI(3)
-ORI
-ANDI
+OR
+AND
 IFN(False_0)
 // la condition 0 est vraie
 
-// Write a value into variable y
-  // loading y adress (left value) in stack
-LOADBP
-SHIFT(1) // offset 1 
-  // loading expected y (right) value in stack
+// loading y adress (left value) in stack
+LOADBP // load current BP address
+SHIFT(1) // apply offset 1
+// loading expected y (right) value in stack
 LOADI(1)
-  // storing y (right) value at y adress
-STOREP
+STOREP // storing y (right) value at y adress (left value)
 
 GOTO(End_0)
 False_0:
 // la condition 0 est fausse
 
-// Write a value into variable y
-  // loading y adress (left value) in stack
-LOADBP
-SHIFT(1) // offset 1 
-  // loading expected y (right) value in stack
+// loading y adress (left value) in stack
+LOADBP // load current BP address
+SHIFT(1) // apply offset 1
+// loading expected y (right) value in stack
 LOADI(1)
-  // storing y (right) value at y adress
-STOREP
+STOREP // storing y (right) value at y adress (left value)
 
 End_0:
 // Fin conditionelle 0
+// Ends program target code
 
-/* Stoping (main) program target PCode */
 return stack[sp-1].int_value;
 }
 

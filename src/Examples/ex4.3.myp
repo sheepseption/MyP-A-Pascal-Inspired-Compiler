@@ -1,5 +1,5 @@
 program exemple;
-{Une evaluation de booléen}
+{Une evaluation de booléen, non paresseuse}
 var
   x:int;
   y:int;

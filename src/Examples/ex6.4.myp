@@ -1,0 +1,11 @@
+program exemple;
+{Fonction recursive}
+function
+  fact (x:int) : int
+  begin
+   if (x < 1) fact := 1
+        else fact := (x *fact(x-1));
+  end;
+begin
+  fact (3);
+end.

@@ -1,0 +1,13 @@
+program exemple;
+{Sous-blocs simples avec masquage et restoration}
+var
+  x:int;
+begin
+  x := 0;
+  var
+    x:int;
+  begin
+    x := 1;
+  end;
+  x;
+end.

@@ -1,9 +1,6 @@
 #include "PCode.h"
 
-/* (Optionnal) functions' target PCode */
-
-int main() {
-/* Starting (main) program target PCode */
+int main() { // Starts program target code
 
 LOADI(1)
 LOADF(3.500000)
@@ -17,8 +14,8 @@ MULTF
 LOADI(6)
 I2F2 // converting second arg to float
 ADDF
+// Ends program target code
 
-/* Stoping (main) program target PCode */
 return stack[sp-1].int_value;
 }
 

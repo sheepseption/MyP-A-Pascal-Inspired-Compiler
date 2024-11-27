@@ -1,0 +1,10 @@
+program exemple;
+{Fonction simple}
+function
+  toOne (x:int) : int
+  begin
+   toOne := 1;
+  end;
+begin
+  toOne (2);
+end.

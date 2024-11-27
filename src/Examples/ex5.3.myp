@@ -1,0 +1,15 @@
+program exemple;
+{Sous-blocs simples avec conversion}
+var
+  x:float;
+  y:float;
+begin
+  x := 0.0;
+  var
+    x:int;
+  begin
+    x := 1;
+    y := x;
+  end;
+  y;
+end.

@@ -65,6 +65,8 @@ void print_top_stack_index()
 void print_top_stack_float();
 // Imprime le sommet de pile comme un flottant
 
+void test();
+
 void test()
 {
   // testing macros' syntax (not to be ran)
