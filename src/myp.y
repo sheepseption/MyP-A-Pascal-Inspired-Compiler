@@ -118,17 +118,18 @@ prog_body : opt_funs
             {printf("%s\n",start_main);}
             opt_vars
 	    BIN inst_list BOUT DOT
-	    { if($5 == INT)
-        printf("%s\n",end_main_int);
-        else if($5 == FLOAT)
-        printf("%s\n",end_main_float);}
+	    { if($5 == FLOAT)
+        printf("%s\n",end_main_float);
+        else //($5 == INT)
+        printf("%s\n",end_main_int);}
+        
             
 ;
 
 
 // II. Declarations de variables
 
-opt_vars : var decl_list
+opt_vars : var decl_list    {}
 |
 ;
 
@@ -210,11 +211,11 @@ opt_vars block_begin inst_list block_end   {}
 
 // Entrée et sortie explicite d'un bloc
 
-block_begin : BIN
+block_begin : BIN       {}
 ;
 // entrée dans un sous-bloc
 
-block_end : BOUT
+block_end : BOUT        {printf("RESTOREBP\n"); depth--;}
 ;
 // sortie d'un sous-bloc
 
@@ -364,7 +365,7 @@ exp
                               }
 | PO exp PF                   {$$ = $2;}
 | ID                          {attribute x = get_symbol_value((sid)$1);
-                               printf("LOADBP;\nSHIFT(%d)\nLOADP;\n", x->offset); //LOADI(%d);\n
+                               printf("LOADBP;\nSHIFT(%d);\nLOADP;\n", x->offset); //LOADI(%d);\n
                                $$ = x->type;
                               }
 | app                         {}
