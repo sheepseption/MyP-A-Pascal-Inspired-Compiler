@@ -13,7 +13,7 @@ void yyerror (char* s) {
   exit(0);
   }
 		
- int depth=0; // block depth
+ int depth = -1; // block depth
  int offset=0;
  int label=0;
  int loop=0;
@@ -130,19 +130,23 @@ prog_body : opt_funs
 // II. Declarations de variables
 
 opt_vars : var decl_list    {}
-|
+|                           {if(depth == -1)
+                              depth++;}
 ;
 
-var: VAR // ici on entre dans des declarations de variables
+var: VAR {if(depth != -1) {
+  printf("SAVEBP\n"); depth++; offset=1;}
+  else depth++;}// ici on entre dans des declarations de variables
 ;
 
 decl_list : decl_list decl   {} 
 | decl                       {}
 ;
 
-decl: ID CLN type PV             {attribute i = makeSymbol($3, offset++,depth);
+decl: ID CLN type PV             {
+                                  attribute i = makeSymbol($3, offset++, depth);
                                   set_symbol_value((sid)$1,i);
-                                  if ($3 == INT) {printf("LOADI(%d)\n", 0);}
+                                  if ($3 == INT) {printf("LOADI(%d) miou\n", 0);}
                                   else if ($3 == FLOAT) {printf("LOADF(%f)\n", 0.0);}
                                   //$$ = (int) i->offset;
                                   }
@@ -211,18 +215,27 @@ opt_vars block_begin inst_list block_end   {}
 
 // Entrée et sortie explicite d'un bloc
 
-block_begin : BIN       {}
+block_begin : BIN       {/*printf("SAVBP\n"); depth++;*/}
 ;
 // entrée dans un sous-bloc
 
-block_end : BOUT        {printf("RESTOREBP\n"); depth--;}
+block_end : BOUT        {printf("RESTOREBP\n"); 
+                          unstack(offset-1);
+                          depth--;}
 ;
 // sortie d'un sous-bloc
 
 
 // IV.1 Affectations
 
-aff : ID aff_symb exp               {if(get_symbol_value($<string_value>1)->type == $3){printf("STOREP\n");}
+aff : ID aff_symb exp               {if(get_symbol_value($<string_value>1)->type == FLOAT)
+                                      {
+                                        if($3 == INT)
+                                          printf("I2F2\n");
+                                        printf("STOREP\n");
+                                      }
+                                    else if (get_symbol_value($<string_value>1)->type == $3)
+                                      {printf("STOREP\n");}
                                      else {printf("Erreur: Type error in affectation\n");
                                      return 0;}
                                     }
@@ -230,8 +243,12 @@ aff : ID aff_symb exp               {if(get_symbol_value($<string_value>1)->type
                         
 ;
 
-aff_symb: AFF {
-              printf("LOADBP\nSHIFT(%d)\n", get_symbol_value($<string_value>0)->offset);
+aff_symb: AFF {attribute x  = get_symbol_value($<string_value>0);
+              
+              if (x->depth == depth)
+                printf("LOADBP\nSHIFT(%d)\n", x->offset);
+              else 
+                printf("LOADBP\nLOADP\nSHIFT(%d)\n", x->offset);
               }
                                     
 

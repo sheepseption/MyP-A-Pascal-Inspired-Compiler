@@ -7,7 +7,7 @@
  *
  *  Type attribute can be customized.
  *
- *  Symbol names must be valid sid from Table des chaines. 
+ *  Symbol names must be valid sid from Table des chaines.
  *
  */
 
@@ -18,30 +18,31 @@
 
 /* Déclarations des types d'attributs */
 
-char* type2string (int);
-struct ATTRIBUTE {
+char *type2string(int);
+struct ATTRIBUTE
+{
   int type;
   int offset;
   int depth;
-  
-  /* les autres attributs dont vous pourriez avoir besoin 
-     pour les symboles seront déclarés ici */
-  
-};
-   
-typedef struct ATTRIBUTE * attribute;
 
+  /* les autres attributs dont vous pourriez avoir besoin
+     pour les symboles seront déclarés ici */
+};
+
+typedef struct ATTRIBUTE *attribute;
 
 attribute makeSymbol(int type, int offset, int depth);
 
-attribute new_attribute ();
+attribute new_attribute();
 /* returns the pointeur to a newly allocated (but uninitialized) attribute value structure */
-
 
 /* get the symbol value of symb_id from the symbol table, NULL if it fails */
 attribute get_symbol_value(sid symb_id);
 
 /* add the symbol symb_id with given value */
-attribute set_symbol_value(sid symb_id,attribute value);
+attribute set_symbol_value(sid symb_id, attribute value);
 
+void remove_symbol();
+
+void unstack(int offset);
 #endif
