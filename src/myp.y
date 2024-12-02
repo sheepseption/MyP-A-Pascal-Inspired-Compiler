@@ -17,7 +17,9 @@ void yyerror (char* s) {
  int offset=0;
  int label=0;
  int loop=0;
-
+ int label_and=0;
+ int label_or=0;
+ int arguments=0;
   char * start_main=  
 "int main() {\n\
 /* Starting (main) program target PCode */\n";
@@ -54,7 +56,7 @@ int new_offset() {
 %token <int_value> NUM 
 %token <float_value> DEC
 
-%token PRG FUN VAR BIN BOUT AFF CLN DOT
+%token PRG FUN VAR BIN BOUT AFF CLN DOT 
 
 %token INT FLOAT VOID
 
@@ -100,8 +102,8 @@ char * type2string (int c) {
 
 // liste de tous les non terminaux dont vous voulez manipuler l'attribut
 %type <type_value> type exp  typename ret inst inst_list prog_body 
-%type <string_value> fun_head 
-%type <int_value> aff_symb if while//added by me
+%type <string_value> fun_head fun_name arg arg_list fid
+%type <int_value> aff_symb if while app
  /* Attention, la rêgle de calcul par défaut $$=$1 
     peut créer des demandes/erreurs de type d'attribut */
 
@@ -169,28 +171,38 @@ opt_funs : opt_funs function
 | {printf("/* (Optionnal) functions' target PCode */\n\n");}
 ;
 
-function : fun_head fun_body {}
+function : fun_head fun_body {printf("}\n");}
 ;
 
-fun_head : fun fun_name opt_arg CLN type {}
+fun_head : fun fun_name opt_arg CLN type {
+                                        attribute i = makeSymbol($5, -1, 0); 
+                                        set_symbol_value((sid)$2,i); 
+                                        printf("void call_%s(){\n", (sid)$2 );
+                                        }
 ;
 
-fun:FUN
+fun:FUN 
 
-fun_name : ID
+fun_name : ID {offset = -1;
+              $$ = (sid)$1;}
 ;
 
 opt_arg : PO arg_list PF
 | ;
 
-arg_list : arg vir arg_list
-	   // récursion droite pour numéroter les paramètres du dernier au premier
-| arg
 
-arg : ID CLN type              {}
+arg_list : arg vir arg_list {get_symbol_value($1)->offset=--offset;}
+	   // récursion droite pour numéroter les paramètres du dernier au premier
+     
+| arg {get_symbol_value($1)->offset=--offset;}
+;
+arg : ID CLN type  {$$=$1;
+                    attribute i = makeSymbol($3, 0, depth);
+                    set_symbol_value($1, i);
+                   }            
 ;
 
-vir : VIR                      {}
+vir : VIR                      
 ;
 
 fun_body : opt_vars BIN inst_list BOUT PV    {}
@@ -418,25 +430,31 @@ exp
 | exp DIFF exp                {if($1 == INT){printf("NEQI\n");}
                                else if($3 == FLOAT){printf("NEQF\n");}
                               }
-| exp AND exp                 {printf("AND\n");}
-| exp OR exp                  {printf("OR\n");}
+| exp and exp                 {printf("AND\nLF_AND_%d:\n", label_and);}
+| exp or exp                  {printf("OR\nLV_OR_%d:\n", label_or);}
 
 ;
 
+and : AND {label_and++;
+           printf("IFN(LF_AND_%d)\n", label_and);}
+or : OR {label_or++;  
+         printf("IFT(LV_OR_%d)\n", label_or);}
 // V.3 Applications de fonctions
 
 
-app : fid PO args PF          {}
+app : fid PO args PF          {printf("LOAD(0)\nSAVEBP\nCALL(call_%s)\nRESTOREBP\nENDCALL(%d)\n", $<string_value>1, arguments);
+                               arguments=0;
+                               $$=get_symbol_value($1)->type;}
 ;
 
-fid : ID                      {}
+fid : ID                      {$$=$1;}
 
 args :  arglist               {}
 |                             {}
 ;
 
-arglist : arglist VIR exp     {} // récursion gauche pour empiler les arguements de la fonction de gauche à droite
-| exp                         {}
+arglist : arglist VIR exp     {++arguments;} // récursion gauche pour empiler les arguements de la fonction de gauche à droite
+| exp                         {++arguments;}
 ;
 
 
