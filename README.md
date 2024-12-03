@@ -14,12 +14,14 @@ Pour afficher le fichier compilé sur le terminal :
 
 
 ######### Fonctionalité du projet #########
-
 I) Gestion des expressions arithmétiques simples avec constantes :
+Dans cette phase, les expressions arithmétiques simples impliquant des constantes sont gérées. Les constantes sont analysées en fonction de leur type (int ou float),  Les conversions sont réalisées pour assurer la cohérence des expressions mixtes (addition d'un entier avec un flottant). Les instructions nécessaires pour les conversions, telles que I2F1 et I2F2, sont générées automatiquement.
 
 II) Gestion des types : 
+La gestion des types introduit la conversion automatique entre int et float lors des évaluations d'expressions mixtes. La règle de conversion est conforme au principe de promotion des types (int vers float) pour éviter les pertes de précision. Les instructions comme I2F1 (conversion d'entier en flottant sous sommet de pile) et I2F2 (conversion en sommet de pile) sont insérées dans le code généré lorsque nécessaire.
 
 III) Gestion des variables globales : 
+Les variables globales sont déclarées et sont initialisées par défaut à 0 au début. Cette phase gère également l'allocation de ces variables dans la mémoire avec des offsets appropriés, en utilisant une table des symboles pour suivre les informations comme (nom, type, offset). Lors des affectations, une vérification est effectuée pour s'assurer que le type de la valeur assignée correspond au type de la variable. 
 
 IV) Gestion des branchements :  Effectuée avec une évaluation paresseuse.
 Dans cette partie, les règles concernant les booléens ont été manipulées: pour chaque opérateurs
