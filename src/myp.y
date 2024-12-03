@@ -416,17 +416,17 @@ exp
 // V.2. Booléens
 
 | NOT exp %prec UNA           {printf("NOT\n");}
-| exp INF exp                 {if($1 == INT){printf("LTI\n");}
-                               else if($3 == FLOAT){printf("LTF\n");}
+| exp INF exp                 {if($1 == INT && $3 == INT){printf("LTI\n");}
+                               else {printf("LTF\n");}
                               }
-| exp SUP exp                 {if($1 == INT){printf("GTI\n");}
-                               else if($3 == FLOAT){printf("GTF\n");}
+| exp SUP exp                 {if($1 == INT && $3 == INT){printf("GTI\n");}
+                               else {printf("GTF\n");}
                               }
-| exp EQUAL exp               {if($1 == INT){printf("EQI\n");}
-                               else if($3 == FLOAT){printf("EQF\n");}
+| exp EQUAL exp               {if($1 == INT && $3 == INT){printf("EQI\n");}
+                               else {printf("EQF\n");}
                               }
-| exp DIFF exp                {if($1 == INT){printf("NEQI\n");}
-                               else if($3 == FLOAT){printf("NEQF\n");}
+| exp DIFF exp                {if($1 == INT && $3 == INT){printf("NEQI\n");}
+                               else {printf("NEQF\n");}
                               }
 | exp AND exp                 {int local_label = label_and++;
                                  printf("IFN(LF_AND_FALSE_%d)\n", local_label);
