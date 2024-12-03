@@ -445,9 +445,9 @@ exp
 // V.3 Applications de fonctions
 
 
-app : fid PO args PF          {if(get_symbol_value($1)->type; == INT)
+app : fid PO args PF          {if(get_symbol_value($1)->type == INT)
                                     {printf("LOADI(0)\nSAVEBP\nCALL(call_%s)\nRESTOREBP\nENDCALL(%d)\n", $<string_value>1, arguments);}
-                               else if (get_symbol_value($1)->type; == FLOAT)
+                               else if (get_symbol_value($1)->type == FLOAT)
                                     {printf("LOADI(0.0)\nSAVEBP\nCALL(call_%s)\nRESTOREBP\nENDCALL(%d)\n", $<string_value>1, arguments);}
                                else
                                     {printf("LOADI(0)\nSAVEBP\nCALL(call_%s)\nRESTOREBP\nENDCALL(%d)\n", $<string_value>1, arguments);}
