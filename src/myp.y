@@ -122,7 +122,7 @@ prog_body : opt_funs
 	    BIN inst_list BOUT DOT
 	    { if($5 == FLOAT)
         printf("%s\n",end_main_float);
-        else //($5 == INT)
+        else 
         printf("%s\n",end_main_int);}
         
             
