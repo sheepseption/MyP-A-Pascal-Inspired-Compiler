@@ -326,7 +326,7 @@ exp
                                 printf("ADDF\n");
                                 $$ = FLOAT;
                               }
-                              //$$ = $1 + $3;
+                              
                               }
 
 | exp MOINS exp               {if($1 == INT && $3 == INT) {
@@ -347,7 +347,7 @@ exp
                                 printf("SUBF\n");
                                 $$ = FLOAT;
                               };
-                              /*$$ = $1 - $3;*/
+                              
                               }
 
 | exp STAR exp                {if($1 == INT && $3 == INT) {
@@ -392,26 +392,20 @@ exp
                               }
 | PO exp PF                   {$$ = $2;}
 | ID                          {attribute x = get_symbol_value((sid)$1);
-                               printf("LOADBP\nSHIFT(%d)\nLOADP\n", x->offset); //LOADI(%d);\n
+                               printf("LOADBP\nSHIFT(%d)\nLOADP\n", x->offset); 
                                $$ = x->type;
                               }
 | app                         {}
-| NUM                         {//attribute i = makeSymbol(INT, new_offset(), 1);
-                              //$$ = i->type;
+| NUM                         {
                               $$ = INT;
                               printf("LOADI(%d)\n", $1);
                               }
-| DEC                         {//attribute f = makeSymbol(FLOAT, new_offset(), 1);
-                              //$$ = f->type;
-                              $$ = $1;
-                              if ($<int_value>0 != 666){
-                                $$ = FLOAT;
-                                printf("LOADF(%f)\n", (float)$1);}
-                              }
-//why $1 instead of $$
-//est-ce que c'est le compilateur qui gère le cas de division par zero
-//detection erreurs (conversion implicite)
-//est-ce qu'on a le droit de modifier type_value
+| DEC                         {
+                              
+                              $$ = FLOAT;
+                              printf("LOADF(%f)\n", (float)$1);}
+                             
+
 
 // V.2. Booléens
 
