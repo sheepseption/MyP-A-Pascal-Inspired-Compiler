@@ -60,3 +60,4 @@ Dans cette partie, on use de la récursion à droite pour le stockage des argume
 Quand on rencontre un fun_head, on stocke la fonction dans la table des symboles avec comme type son type de retour. Ce dernier est utile pour la récursivité ou pour l'appel de la fonction dans opération arithmétique
 Pour l'appel des fonctions, on définie la variable globale "arguments" qui sera incrémenté à chaque traitement d'un argument, et qui sera réinitialisée à 0 quand on finit l'appel. Elle permet de garder le nombre des arguments afin de stocker la valeur de retour dans l'emplacement du premier argument.
 Cependant, cette solution n'est pas valable si on a un argument comme appel à une autre fonction: Sisyphus(inf,mountain,Rock(10, round)).
+La vérification de la cohérence des types d'arguments de la fonction n'a pas été implémentée.
