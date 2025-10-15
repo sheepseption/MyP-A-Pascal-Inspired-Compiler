@@ -1,0 +1,36 @@
+# ===== Compiled Object Files =====
+*.o
+*.so
+*.a
+*.out
+*.exe
+*.dll
+
+# ===== Build Artifacts =====
+server
+myp
+run
+alltests
+test_*
+*.gcda
+*.gcno
+*.gcov
+
+# ===== Backup / Temporary Files =====
+*~
+*.swp
+*.bak
+*.tmp
+*.log
+
+# ===== Installation Directory =====
+install/*
+!install/.keep
+
+# ===== Editor / OS Files =====
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ===== Coverag
